@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -34,85 +32,49 @@ public class AnagramDictionary {
     private static final int MIN_NUM_ANAGRAMS = 5;
     private static final int DEFAULT_WORD_LENGTH = 3;
     private static final int MAX_WORD_LENGTH = 7;
-    private int wordLength = DEFAULT_WORD_LENGTH;
     private Random random = new Random();
-    private HashSet<String> wordset = new HashSet<>();
     private ArrayList<String> wordlist = new ArrayList<>();
-    private HashMap<String, ArrayList<String>> lettersToWord = new HashMap<>();
-    private HashMap<Integer, ArrayList<String>> sizeToWords = new HashMap<>();
-
 
     public AnagramDictionary(Reader reader) throws IOException {
         BufferedReader in = new BufferedReader(reader);
         String line;
         while ((line = in.readLine()) != null) {
             String word = line.trim();
-            String sort_word = sortString(word);
             wordlist.add(word);
-            if (sizeToWords.containsKey(word.length()))
-                sizeToWords.get(word.length()).add(word);
-            else {
-                sizeToWords.put(word.length(), new ArrayList<String>());
-                sizeToWords.get(word.length()).add(word);
-            }
-            if (lettersToWord.containsKey(sort_word))
-                lettersToWord.get(sort_word).add(word);
-            else {
-                lettersToWord.put(sort_word, new ArrayList<String>());
-                lettersToWord.get(sort_word).add(word);
-            }
         }
-        wordset.addAll(wordlist);
-        Log.e(TAG, "AnagramDictionary: wordset size" + wordset.size(), null);
-        Log.e(TAG, "AnagramDictionary: wordmap size" + lettersToWord.size(), null);
-        Log.e(TAG, "AnagramDictionary: wordlist size" + wordlist.size(), null);
-        Log.e(TAG, "AnagramDictionary: sizetowords size" + sizeToWords.size(), null);
     }
 
     public boolean isGoodWord(String word, String base) {
-        if (wordset.contains(word) && !(word.contains(base)))
-            return true;
-        return false;
-
+        return true;
     }
 
+    /*
+    * sort @targetWord
+    * first compare length then check equality
+    * if equal then add to result and return result
+     */
     public List<String> getAnagrams(String targetWord) {
         ArrayList<String> result = new ArrayList<String>();
         String word = sortString(targetWord);
-
-        /*for (String temp : wordlist) {
+        for (String temp : wordlist) {
             if (temp.length() == targetWord.length()) {
                 if (word.equals(sortString(temp))) {
                     result.add(temp);
                 }
             }
-        }*/
-
-        /*if (!lettersToWord.containsKey(word))
-        {
-            lettersToWord.put(word, new ArrayList<String>());
-            lettersToWord.get(word).add(targetWord);
-        }*/
-        //Log.e(TAG, "getAnagrams: count " + lettersToWord.get(word).size(), null);
-        return lettersToWord.get(word);
+        }
+        Log.e(TAG, "getAnagrams: count " + result, null);
+        return result;
     }
 
     public List<String> getAnagramsWithOneMoreLetter(String word) {
         ArrayList<String> result = new ArrayList<String>();
-        for (char i = 'a'; i <= 'z'; i++) {
-            String sort_word = sortString(word + i);
-            if (lettersToWord.get(sort_word) != null)
-                result.addAll(lettersToWord.get(sort_word));
-        }
-        for (int i = 0; i < result.size(); i++) {
-            String temp = result.get(i);
-            if (temp.contains(word))
-                result.remove(temp);
-        }
-        Log.e(TAG, "getAnagrams: countacd " + result.size(), null);
         return result;
     }
 
+    /*
+    ** sort string and convert it to lowercase
+     */
     private String sortString(String input) {
         char[] charArray = input.toLowerCase().toCharArray();
         Arrays.sort(charArray);
@@ -120,18 +82,6 @@ public class AnagramDictionary {
     }
 
     public String pickGoodStarterWord() {
-        int n = random.nextInt(sizeToWords.get(wordLength).size() - 1);
-        String start;
-        int anagram = 0;
-        do {
-            start = sizeToWords.get(wordLength).get(n);
-            anagram = getAnagramsWithOneMoreLetter(start).size();
-            n++;
-            if (n == sizeToWords.get(wordLength).size())
-                n = 0;
-        } while (anagram < MIN_NUM_ANAGRAMS);
-        if (wordLength < MAX_WORD_LENGTH)
-            wordLength++;
-        return start;
+        return "skate";
     }
 }
