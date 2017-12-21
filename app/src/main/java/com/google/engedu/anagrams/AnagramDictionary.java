@@ -34,6 +34,7 @@ public class AnagramDictionary {
     private static final int MIN_NUM_ANAGRAMS = 5;
     private static final int DEFAULT_WORD_LENGTH = 3;
     private static final int MAX_WORD_LENGTH = 7;
+    private int wordLength = DEFAULT_WORD_LENGTH;
     private Random random = new Random();
     private HashSet<String> wordset = new HashSet<>();
     private ArrayList<String> wordlist = new ArrayList<>();
@@ -79,22 +80,20 @@ public class AnagramDictionary {
         ArrayList<String> result = new ArrayList<String>();
         String word = sortString(targetWord);
 
-        /*
-        for (String temp : wordlist) {
+        /*for (String temp : wordlist) {
             if (temp.length() == targetWord.length()) {
                 if (word.equals(sortString(temp))) {
                     result.add(temp);
                 }
             }
-        }
+        }*/
 
-        if (!lettersToWord.containsKey(word))
+        /*if (!lettersToWord.containsKey(word))
         {
             lettersToWord.put(word, new ArrayList<String>());
             lettersToWord.get(word).add(targetWord);
-        }
-        */
-        Log.e(TAG, "getAnagrams: count " + lettersToWord.get(word).size(), null);
+        }*/
+        //Log.e(TAG, "getAnagrams: count " + lettersToWord.get(word).size(), null);
         return lettersToWord.get(word);
     }
 
@@ -105,7 +104,12 @@ public class AnagramDictionary {
             if (lettersToWord.get(sort_word) != null)
                 result.addAll(lettersToWord.get(sort_word));
         }
-        Log.e(TAG, "getAnagrams: count " + result.size(), null);
+        for (int i = 0; i < result.size(); i++) {
+            String temp = result.get(i);
+            if (temp.contains(word))
+                result.remove(temp);
+        }
+        Log.e(TAG, "getAnagramswith one more letter: count " + result.size(), null);
         return result;
     }
 
@@ -116,17 +120,18 @@ public class AnagramDictionary {
     }
 
     public String pickGoodStarterWord() {
-        int n = random.nextInt(wordlist.size() - 1);
+        int n = random.nextInt(sizeToWords.get(wordLength).size() - 1);
         String start;
         int anagram = 0;
         do {
-            start = wordlist.get(n);
+            start = sizeToWords.get(wordLength).get(n);
             anagram = getAnagramsWithOneMoreLetter(start).size();
             n++;
-            if (n == wordlist.size())
+            if (n == sizeToWords.get(wordLength).size())
                 n = 0;
-        } while (anagram <= MIN_NUM_ANAGRAMS);
-
+        } while (anagram < MIN_NUM_ANAGRAMS);
+        if (wordLength < MAX_WORD_LENGTH)
+            wordLength++;
         return start;
     }
 }
